@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/users")
@@ -55,5 +56,18 @@ public class UserController {
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
         return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/login")
+    @Operation(summary = "로그인", description = "이메일과 비밀번호로 사용자 로그인")
+    public ResponseEntity<?> login(@RequestBody Map<String, String> loginRequest) {
+        try {
+            String email = loginRequest.get("email");
+            String password = loginRequest.get("password");
+            User user = userService.login(email, password);
+            return ResponseEntity.ok(user);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(401).body(Map.of("error", e.getMessage()));
+        }
     }
 } 
