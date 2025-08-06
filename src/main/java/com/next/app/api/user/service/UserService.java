@@ -37,13 +37,27 @@ public class UserService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다: " + id));
         
+        user.setEmail(userDetails.getEmail());
         user.setName(userDetails.getName());
-        user.setPhone(userDetails.getPhone());
-        
+        user.setPhone_number(userDetails.getPhone_number());
+        user.setPassword(userDetails.getPassword());
+        user.setDelivery_address(userDetails.getDelivery_address());
+
         return userRepository.save(user);
     }
     
     public void deleteUser(Long id) {
         userRepository.deleteById(id);
+    }
+
+    public User login(String email, String password) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("이메일이 존재하지 않습니다: " + email));
+
+        if (!user.getPassword().equals(password)) {
+            throw new RuntimeException("비밀번호가 일치하지 않습니다.");
+        }
+
+        return user;
     }
 } 
